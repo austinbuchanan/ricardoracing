@@ -1,22 +1,8 @@
 # ricardoracing
-Repository for CSCI 4940
+Repository for CSCI 4940 Austin Peay State University, Clarksville, TN Fall 2016
+David Pridemore (me@davidpridemore.com)
+Austin Buchanan (abuchanan5@my.apsu.edu)
 
-Licensed under The MIT License
-	
-	Copyright (c) 2016 David Pridemore, Austin Buchanan
+We completed this project for a local company and for a course credit internship. This is a web scraper project that pulls data from allbreedpedigree.com. You must have a working account with allbreedpedigree.com for the application to actually return data.
 
-	* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the 
-	* Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
-	* and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-	
-	* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-	* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-	* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-	* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-	
-	* Redistributions of files must retain the above copyright notice.
-	*
-	* @author David Pridemore <me@davidpridemore.com>
-	* @author Austin Buchanan <abuchanan5@my.apsu.edu>
-
-8-29-2016 - Added functionality for multiple curl requests. App now displays multiple reports of horses based on names entered into index.htm (sans pictures and full functionality of allbreedpedigree.com)
+See license.md for MIT licensing information.
