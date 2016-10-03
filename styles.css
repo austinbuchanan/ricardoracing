@@ -1,0 +1,11 @@
+body {
+	background-color: #aaa;
+	text-align: center;
+	width: 100%;
+	margin: 0 auto;
+	margin-left: 40%;
+}
+
+textarea{
+	border: 2px solid black;
+}
