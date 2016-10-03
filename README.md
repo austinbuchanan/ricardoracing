@@ -8,7 +8,7 @@
 	Austin Buchanan (abuchanan5@my.apsu.edu)
 
 	We completed this project for a local company and for a course credit internship. 
-	This is a web scraper project that pulls data from [allbreedpedigree.com]: http://www.allbreedpedigree.com. You 
+	This is a web scraper project that pulls data from http://www.allbreedpedigree.com. You 
 	must have a working account with allbreedpedigree.com for the application to 
 	return data.
 
@@ -17,8 +17,8 @@
 
 ## about the app	
 	This app will generate horse inbreeding statistics for quarter horses based on user input. 
-	This app uses PHP to scrape [allbreedpedigree.com](http://www.allbreedpedigree.com) 
-	for information on each horse the user enters, then outputs that information into a .csv file.
+	This app uses PHP to scrape allbreedpedigree.com for information on each horse the user enters, 
+	then outputs that information into a .csv file.
 
 ## getting started
 	Upon first accessing the app, you will be greeted with a login screen. 
