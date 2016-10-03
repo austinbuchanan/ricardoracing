@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2016 Austin Buchanan
+Copyright (c) 2016 David Pridemore (me@davidpridemore.com) and Austin Buchanan (abuchanan5@my.apsu.edu)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
