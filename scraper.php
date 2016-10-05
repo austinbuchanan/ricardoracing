@@ -1,4 +1,5 @@
 <?php
+session_start();
 /*
 	Licensed under The MIT License
 	
@@ -17,39 +18,13 @@
 	* @author David Pridemore <me@davidpridemore.com>
 	* @author Austin Buchanan <abuchanan5@my.apsu.edu>
 */
-
-    //for username and password session variables
-    session_start();
-
 	//headers for .csv output
-	header('Content-Type: text/csv; charset=utf-8');
-	header('Content-Disposition: attachment; filename=horses.csv');
-
-    //used to process URLs and get HTML content
-	function curl($url) 
-    {
-        // Assigning cURL options to an array
-        $options = Array(
-            CURLOPT_RETURNTRANSFER => TRUE,  // Setting cURL's option to return the webpage data
-            CURLOPT_FOLLOWLOCATION => TRUE,  // Setting cURL to follow 'location' HTTP headers
-            CURLOPT_AUTOREFERER => TRUE, // Automatically set the referer where following 'location' HTTP headers
-            CURLOPT_CONNECTTIMEOUT => 1200,   // Setting the amount of time (in seconds) before the request times out
-            CURLOPT_TIMEOUT => 1200,  // Setting the maximum amount of time for cURL to execute queries
-            CURLOPT_MAXREDIRS => 10, // Setting the maximum number of redirections to follow
-            CURLOPT_USERAGENT => "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.1a2pre) Gecko/2008073000 Shredder/3.0a2pre ThunderBrowse/3.2.1.8",  // Setting the useragent
-            CURLOPT_URL => $url, // Setting cURL's URL option with the $url variable passed into the function
-        );
-         
-        $ch = curl_init();  // Initialising cURL 
-        curl_setopt_array($ch, $options);   // Setting cURL's options using the previously assigned array data in $options
-        $data = curl_exec($ch); // Executing the cURL request and assigning the returned data to the $data variable
-        curl_close($ch);    // Closing cURL 
-        return $data;   // Returning the data from the function 
-    }
+	//header('Content-Type: text/csv; charset=utf-8');
+	//header('Content-Disposition: attachment; filename=horses.csv');
 	
 	//open .csv file for writing and create headings for each horse's data
-    $output = fopen('php://output', 'w');
-	$header_array = Array('Horse', 'Relative', 'Inbreeding Stats', 'Crosses', 'Lines', 'Blood%', 'Influence', 'AGR');
+    $output = fopen('horses.csv', 'w');
+	$heading_array = Array('Horse', 'Relative', 'Inbreeding Stats', 'Crosses', 'Lines', 'Blood%', 'Influence', 'AGR');
 	
     //include the amazing simple dom parser that allows us to search through the html of the returned data
 	include('simple_html_dom.php');
@@ -129,108 +104,91 @@
 		array_push($checkbreed, "http://www.allbreedpedigree.com/".$horse_name_array[$j]);
 	}
     
-    //start output buffer. each echo between this and ob_get_clean will put content into the output buffer.
+    
     ob_start();
-    //declare variable used to store page data from each curl operation
-    $page_data = '';
 
-    //curl each checkbreed URL, store their contents into $page_data, and output the results to the output buffer.
+    $page_data = '';
+    
+    function curl($url) 
+    {
+        // assigning curl options to array
+        $options = Array(
+            CURLOPT_RETURNTRANSFER => TRUE,  
+            CURLOPT_FOLLOWLOCATION => TRUE,  
+            CURLOPT_AUTOREFERER => TRUE, 
+            CURLOPT_CONNECTTIMEOUT => 1200,   
+            CURLOPT_TIMEOUT => 1200,  
+            CURLOPT_MAXREDIRS => 10, 
+            CURLOPT_USERAGENT => "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.1a2pre) Gecko/2008073000 Shredder/3.0a2pre ThunderBrowse/3.2.1.8",  //setting the useragent
+            CURLOPT_URL => $url, //setting curl's url option with the $url variable passed into the function
+        );
+         
+        $ch = curl_init();   
+        curl_setopt_array($ch, $options);   
+        $data = curl_exec($ch); 
+        curl_close($ch); 
+        return $data; 
+    }
+
     foreach ($checkbreed as $cb)
     {
         $page_data = curl($cb);
         echo $page_data;
     }
-
-    //store contents of output buffer as a string
 	$cbpage = ob_get_clean();
 	
-    //removes HTML entities and replaces them with Unicode equivalents
-	$cbpage = html_entity_decode($cbpage);
+	$cbpage = html_entity_decode($cbpage); //get rid of entities
 	
-    //used to output horse name into 1st column of csv file
 	$first_column = array();
-
-    //convert output buffer string into HTML
 	$cbhtml = str_get_html($cbpage); 
-
-    //used to store page titles
     $breed = Array();
-
-    //search for title elements within HTML and store each one into $breed[]
     foreach($cbhtml->find('title') as $title)
     {
         $breed[] = $title->plaintext;
     }
-
-    //filter out all horses that aren't quarter horses from the result
+    //print_r($breed);
     for($i = 0; $i < count($horse_name_array); $i++)
     {
-        //if title element contains Quarter Horse within it, perform the following code:
         if(strpos($breed[$i], "Quarter Horse") !== FALSE)
         {
-            //URL to be curled
              $curl_url = "http://www.allbreedpedigree.com/index.php?query_type=check&search_bar=linebreeding&hypo_sire=&hypo_dam=&what=done&sort=inf&border=0&h=".$horse_name_array[$i]."&g=".$gens."&crosses=".$crosses."&inf=".$inf_num."&all=".$filter."&sort=inf&t=&username=".$_SESSION['username']."&password=".$_SESSION['password'];
-            
-            //resume output buffer
+            //echo $curl_url."<br>";
             ob_start();
-            
-            //curl URL and store results into output buffer by echoing $page_data
             $page_data = curl($curl_url);
             echo $page_data;
-            
-            //store output buffer contents into string and convert string to HTML
             $search_page = ob_get_clean();
             $search_html = str_get_html($search_page);
-            
-            //search for legend tag within HTML. if there is no legend tag, add URL to urls[] and add the horse's name to display_names[] 
             $legend = $search_html->find('legend');
             if (!$legend)
             {
                 array_push($urls, $curl_url);
                 array_push($first_column, $display_names[$i]);
             }
-            
-            //if there is a legend tag, then there are multiple horses with the same name. search for the one that is a quarter horse
             else
             {
-                //URL to be curled
                 $curl_url = "http://www.allbreedpedigree.com/index.php?query_type=check&search_bar=linebreeding&hypo_sire=&hypo_dam=&what=done&sort=inf&border=0&h=".$horse_name_array[$i]."&g=".$gens."&crosses=".$crosses."&inf=".$inf_num."&all=".$filter."&sort=inf&t=&username=".$_SESSION['username']."&password=".$_SESSION['password'];
-                
-                //resume output buffer
+                //echo $curl_url."<br>";
                 ob_start();
-                
-                //curl URL and store results into output buffer by echoing $page_data
                 $page_data = curl($curl_url);
                 echo $page_data;
-                
-                //store output buffer contents into string and convert string to HTML
                 $search_page = ob_get_clean();
                 $search_html = str_get_html($search_page);
-                
-                //find all td elements within HTML
+                //echo $search_html;
                 foreach($search_html->find('td') as $col)
                 {
-                    //if the td element has the horse's name within it, look at the element next to it
+                
                     if ($col->plaintext == $display_names[$i])
                     {
                         $next_col = $col->next_sibling();
-                        
-                        //if the adjacent element specifies that it is a quarter horse, get the 'a' tag from that row
                         if ($next_col->plaintext == "QUARTER HORSE")
                         {
                             foreach($col->find('a') as $link)
                             {
                                 $href = $link->href;
                             }
-                            
-                            //format link from 'a' tag to be used in url array
                             $formatted_link = "http://www.allbreedpedigree.com/".$href;
-                            
-                            //remove spaces from URL
                             $formatted_link = str_replace(' ', '+', $formatted_link);
-                            
-                            
-                            //add URL to urls[] and add the horse's name to display_names[]
+                            //echo $formatted_link;
                             array_push($urls, $formatted_link);
                             array_push($first_column, $display_names[$i]);
                         }
@@ -239,57 +197,37 @@
                 }
             }
         }
-        //if the title element does not contain 'Quarter Horse' within it, perform following operations
         else if(strpos($breed[$i], "Quarter Horse") === FALSE)
         {
-            //URL to be curled
             $curl_url = "http://www.allbreedpedigree.com/index.php?query_type=check&search_bar=linebreeding&hypo_sire=&hypo_dam=&what=done&sort=inf&border=0&h=".$horse_name_array[$i]."&g=".$gens."&crosses=".$crosses."&inf=".$inf_num."&all=".$filter."&sort=inf&t=&username=".$_SESSION['username']."&password=".$_SESSION['password'];
-            
-            //resume output buffer
+            //echo $curl_url."<br>";
             ob_start();
-            
-            //curl URL and store results into output buffer by echoing $page_data
             $page_data = curl($curl_url);
             echo $page_data;
-            
-            //store output buffer contents into string and convert string to HTML
             $search_page = ob_get_clean();
             $search_html = str_get_html($search_page);
-            
-            /*
-            search for legend tag within HTML. if there is no legend tag, and the title element contains the words 'Quarter Horse', add URL to urls[] and add the horse's name to display_names[]. this will also serve to ensure horses that are not quarter horses will not get outputted.
-            */
             $legend = $search_html->find('legend');
             if (!$legend && strpos($breed[$i], "Quarter Horse" !== FALSE))
             {
                 array_push($urls, $curl_url);
                 array_push($first_column, $display_names[$i]);
             }
-            
-            //if there is a legend tag, then there are multiple horses with the same name. search for the one that is a quarter horse
             else
             {
-                //find all td elements within HTML
                 foreach($search_html->find('td') as $col)
                 {
-                    //if the td element has the horse's name within it, look at the element next to it
                     if ($col->plaintext == $display_names[$i])
                     {
                         $next_col = $col->next_sibling();
-                        
-                        //if the adjacent element specifies that it is a quarter horse, get the 'a' tag from that row
                         if ($next_col->plaintext == "QUARTER HORSE")
                         {
                             foreach($col->find('a') as $link)
                             {
                                 $href = $link->href;
                             }
-                            
-                            //format link from 'a' tag to be used in url array
                             $formatted_link = "http://www.allbreedpedigree.com/".$href;
                             $formatted_link = str_replace(' ', '+', $formatted_link);
-                            
-                            //add URL to urls[] and add the horse's name to display_names[]
+                            //echo $formatted_link;
                             array_push($urls, $formatted_link);
                             array_push($first_column, $display_names[$i]);
                         }
@@ -299,9 +237,6 @@
         }
     }
     
-
-	
-	//begin output buffering for dom conversion	
 	ob_start();
 	
 	
@@ -419,41 +354,35 @@
         }
     }
 	//go through the chunked data
-
-    //set iterator for use in accessing $first_column[] elements
-    $i = 0;
+	$i=0;
 	foreach ($chunked_data as $cd)
     {
 		//remove the inbreeding coefficient number from the bottom of the results and place as the top per client preference
 		
 		$coef = array_pop($cd);
-		$coef = implode($coef); 
+		$coef = implode($coef);
 		$coef = preg_replace("/[^\d,.]/", "", $coef);$coef = $coef."%";
-        /*
-        output horse name, coeffieient, and a character string. this is used so the coefficients can be outputted at the top 
-        of the csv file if necessary.
-        */
+        
         $sort_array = array($first_column[$i], substr($coef, 1), "***");
         fputcsv($output, $sort_array);
 		//output headings after coefficient number
-		fputcsv($output, $header_array);
+		fputcsv($output, $heading_array);
 		
-		//remove numbers from horse names for duplicate horses, output horse data, and print a newline between each table of horses.
+		//remove numbers from horse names for duplicate horses.
         foreach ($cd as $second)
         {
                 $second['1'] = preg_replace('/\d*$/', '', $second['1']);
                 fputcsv($output, $second);
         }
 		fwrite($output, "\n");
-        //increment iterator
-        $i++;
+		$i++;
     }
 	
 	//scraped tables contains all the formatted data for .csv
 	$scraped_tables = ob_get_clean();
 	
 	//output the data for .csv
-	echo $scraped_tables;
+	fwrite($output, $scraped_tables);
 	//print_r($chunked_data);
 	
 	exit();

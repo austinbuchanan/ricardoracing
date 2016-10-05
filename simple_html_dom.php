@@ -43,6 +43,8 @@
  * All of the Defines for the classes below.
  * @author S.C. Chen <me578022@gmail.com>
  */
+ini_set("memory_limit","1000000M");
+set_time_limit(0);
 define('HDOM_TYPE_ELEMENT', 1);
 define('HDOM_TYPE_COMMENT', 2);
 define('HDOM_TYPE_TEXT',	3);
