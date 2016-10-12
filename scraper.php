@@ -23,7 +23,7 @@ session_start();
 	//header('Content-Disposition: attachment; filename=horses.csv');
 
 	//open .csv file for writing and create headings for each horse's data
-    $output = fopen('horses.csv', 'w');
+  $output = fopen('horses.csv', 'w');
 	$heading_array = Array('Horse', 'Relative', 'Inbreeding Stats', 'Crosses', 'Lines', 'Blood%', 'Influence', 'AGR');
 
     //include the amazing simple dom parser that allows us to search through the html of the returned data
@@ -197,7 +197,7 @@ session_start();
                 }
             }
         }
-        else if(strpos($breed[$i], "Quarter Horse") === FALSE)
+        else if(strpos($breed[$i], "Quarter Horse") === FALSE || strpos($breed[$i], "Appendix") !== FALSE)
         {
             $curl_url = "http://www.allbreedpedigree.com/index.php?query_type=check&search_bar=linebreeding&hypo_sire=&hypo_dam=&what=done&sort=inf&border=0&h=".$horse_name_array[$i]."&g=".$gens."&crosses=".$crosses."&inf=".$inf_num."&all=".$filter."&sort=inf&t=&username=".$_SESSION['username']."&password=".$_SESSION['password'];
             //echo $curl_url."<br>";
@@ -219,7 +219,7 @@ session_start();
                     if ($col->plaintext == $display_names[$i])
                     {
                         $next_col = $col->next_sibling();
-                        if ($next_col->plaintext == "QUARTER HORSE")
+                        if ($next_col->plaintext == "QUARTER HORSE" || $next_col->plaintext == "APPENDIX")
                         {
                             foreach($col->find('a') as $link)
                             {
