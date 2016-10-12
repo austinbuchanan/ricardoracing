@@ -1,10 +1,22 @@
 <?php
-//get username and password from login.php
 session_start();
-$_SESSION['username'] = $_POST['username'];
-$_SESSION['password'] = $_POST['password'];
+$_SESSION['username'] = $_REQUEST['username'];
+$_SESSION['password'] = $_REQUEST['password'];
+$username=$_REQUEST['username'];
+$password=$_REQUEST['password'];
 
+
+if(isset($_SESSION['username']))
+    { echo "username: " . $_SESSION['username'] . "</br>";} 
+    else 
+    { echo "username: NOT SET". "</br>";}
+
+if(isset($_SESSION['password']))
+    { echo "password: " . $_SESSION['password']. "</br>";} 
+    else 
+    { echo "password: NOT SET". "</br>";}
 ?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,13 +26,42 @@ $_SESSION['password'] = $_POST['password'];
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="styles.css">
-		<!--<script src="jquery.js"></script>-->
-        <script>
-        </script>
+		<script src="jquery-3.1.1.min.js"></script>
+		<script type = "text/javascript">
+			$( document ).ready(function() {
+				
+				alert( "ready!" );
+				
+				$("#horses-form").submit(function(event) {
+
+				/* stop form from submitting normally */
+				event.preventDefault();
+
+				var $form = $( this ),
+				url = $form.attr( 'action' );
+
+				var posting = $.post( url, 
+				{ 
+					horsenames: $('#horsenames').val(), 
+					filter: $('#filter').val(),
+					gens: $('#gens').val(),
+					crosses: $('#crosses').val(),
+					influence: $('#influence').val(),
+				});
+
+					posting.done(function( data ) 
+					{
+						document.getElementById('download').click();
+						alert('success');
+					});
+				});
+			});
+		</script>
     </head>
     <body>
+	<div id="progress"><p>test</p></div>
 	<div id="horse_form">
-		<form name="horses-form" action="scraper.php" method="post">
+		<form id="horses-form" action="scraper.php" title="" method="post">
 			<table style="padding-top:60px;"
 				<tr>
 					<td>
@@ -30,22 +71,22 @@ $_SESSION['password'] = $_POST['password'];
 				</tr>
 				<tr>
 					<td>
-						<textarea rows="30" name="horsenames"></textarea>
+						<textarea rows="30" id="horsenames"></textarea>
 						<br />
 						<label><strong>Enter a filter:</strong></label>
-						<select name="filter">
-							<option value="Cross+Dups">Cross Dups</option>
+						<select id="filter">
+						    <option value="Cross+Dups">Cross Dups</option>
 							<option value="Dups+Only">Dups Only</option>
-							<option value="All+Horses">All Horses</option>
 							<option value="Males+Only">Males Only</option>
 							<option value="Females+Only">Females Only</option>
+							<option value="All+Horses">All Horses</option>
 						</select>
 					</td>
 				</tr>
 				<tr>
 					<td>
 						<label><strong>Enter the number of generations:</strong></label>
-						<select name="gens">
+						<select id="gens">
 							<option value="4">4</option>
 							<option value="5">5</option>
 							<option value="6">6</option>
@@ -69,7 +110,7 @@ $_SESSION['password'] = $_POST['password'];
 				<tr>
 					<td>
 						<label><strong>Enter the number of crosses:</strong></label>
-						<select name="crosses">
+						<select id="crosses">
 							<option value="2">2</option>
 							<option value="3">3</option>
 							<option value="4">4</option>
@@ -85,7 +126,7 @@ $_SESSION['password'] = $_POST['password'];
 				<tr>
 					<td>
 						<label><strong>Enter the influence:</strong></label>
-						<select name="influence">
+						<select id="influence">
 							<option value="All">All</option>
 							<option value="> 2x3">> 2x3</option>
 							<option value="> 3x3">> 3x3</option>
@@ -106,7 +147,10 @@ $_SESSION['password'] = $_POST['password'];
 				</tr>
 			</table>
 		</form>
-		<!--<script src="jquery.js"></script>
-        <div id="processor"></div>-->
+		
+		<div id="output">
+			<a href="horses.csv" download id="download" hidden></a>
+		</div>
+        
     </body>
 </html>
