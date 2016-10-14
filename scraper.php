@@ -18,12 +18,10 @@ session_start();
 	* @author David Pridemore <me@davidpridemore.com>
 	* @author Austin Buchanan <abuchanan5@my.apsu.edu>
 */
-	//headers for .csv output
-	//header('Content-Type: text/csv; charset=utf-8');
-	//header('Content-Disposition: attachment; filename=horses.csv');
 
 	//open .csv file for writing and create headings for each horse's data
-  $output = fopen('horses.csv', 'w');
+	$output = fopen('horses.csv', 'w');
+	$progress = fopen('progress.txt', 'w');
 	$heading_array = Array('Horse', 'Relative', 'Inbreeding Stats', 'Crosses', 'Lines', 'Blood%', 'Influence', 'AGR');
 
     //include the amazing simple dom parser that allows us to search through the html of the returned data
@@ -33,11 +31,11 @@ session_start();
 	libxml_use_internal_errors(true);
 
 	//take in values from index.htm for each filter and horse name list
-	$horsenames = $_POST['horsenames'];
-	$filter = $_POST['filter'];
-	$crosses = $_POST['crosses'];
-	$gens = $_POST['gens'];
-	$influence = $_POST['influence'];
+	$horsenames = $_REQUEST['horsenames'];
+	$filter = $_REQUEST['filter'];
+	$crosses = $_REQUEST['crosses'];
+	$gens = $_REQUEST['gens'];
+	$influence = $_REQUEST['influence'];
 
 	$inf_num = 0;
 	//influence is weird. the filter menu on allbreedpedigree displays in NumxNum format but requires a decimal in the url
@@ -134,7 +132,7 @@ session_start();
     {
         $page_data = curl($cb);
         echo $page_data;
-    }
+	}
 	$cbpage = ob_get_clean();
 
 	$cbpage = html_entity_decode($cbpage); //get rid of entities
@@ -241,14 +239,19 @@ session_start();
 
 
 	//go curling
+	$incrementer = 0;
+	
 	foreach ($urls as $url)
 	{
+		$urlcount = count($urls);
+		$incrementer++;
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1200);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 1200);
 
 		curl_exec($ch);
 		curl_close($ch);
+		fwrite($progress, "Horse ". $incrementer ." of ".$urlcount." processed \n");
 	}
 
 	//output returned curl data as $page
@@ -384,7 +387,8 @@ session_start();
 	//output the data for .csv
 	fwrite($output, $scraped_tables);
 	//print_r($chunked_data);
-
+	ob_end_clean();
+	unlink('progress.txt');
 	exit();
 
 ?>
