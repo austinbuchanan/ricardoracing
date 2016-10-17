@@ -1,11 +1,39 @@
-body {
-	background-color: #aaa;
-	text-align: center;
+html{
+	background-color: #444;
+}
+
+body{
+	border: 2px solid black;
+	background-color: #739AC5;
 	width: 100%;
-	margin: 0 auto;
-	margin-left: 40%;
+}
+
+#progress{
+	width: 100%;
+}
+
+#heading{
+	background-color: #739AC5;
+	color: #fff;
+	padding: 10px;
+}
+
+#horse_form{
+	display: block;
+	color: #fff;
+	background-color: #355C7D;
+	padding: 10px;
+	border: 2px solid black;
 }
 
 textarea{
+	border: 2px solid black;
+}
+
+select{
+	border: 2px solid black;
+}
+
+input{
 	border: 2px solid black;
 }
