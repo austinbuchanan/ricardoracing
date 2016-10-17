@@ -29,10 +29,10 @@
 ## main page
 	The main page for the app contains a text area field where horse names can be entered, 
 	and 4 drop down menus for additional constraints. These constraints include:
-	..*the kind of report you want to generate (Cross Dups, Dups Only, All Horses, Males Only, Females Only)
-	..*the number of generations you want to include (4-20)
-	..*the number of crosses you want to do (2-10)
-	..*the influence (All, >2x3, >3x3, >3x4, >4x4, >4x5, >5x5, >5x6)
+	* the kind of report you want to generate (Cross Dups, Dups Only, All Horses, Males Only, Females Only)
+	* the number of generations you want to include (4-20)
+	* the number of crosses you want to do (2-10)
+	* the influence (All, >2x3, >3x3, >3x4, >4x4, >4x5, >5x5, >5x6)
 	When you are finished adding horse names, and you have selected your constraint values, click "Submit Query."
 	The app will then scrape allbreedpedigree.com to look for the information that you entered, and output that
 	information into a .csv file.
@@ -40,13 +40,13 @@
 	The .csv file organizes information by horse in the order that you entered it in a table-style fashion.
 	These tables include the horse's name and an inbreeding coefficient at the top of each table, and varying rows
 	of data consisting of:
-	..*the horse's relative's name 
-	..*the inbreeding stats
-	..*the number of crosses
-	..*the lines
-	..*the blood %
-	..*the influence
-	..*the AGR
-	If there is no data in the table, it means that you have either entered the wrong username or password.
+	* the horse's relative's name 
+	* the inbreeding stats
+	* the number of crosses
+	* the lines
+	* the blood %
+	* the influence
+	* the AGR
+	If there is no data in the table, it means that you have entered the wrong username and/or password.
 	If there is no data in 1 or more tables, but there are inbreeding coeffecients, it means that allbreedpedigree.com
 	does not have a record of that horse's relatives for the specified constraints.
